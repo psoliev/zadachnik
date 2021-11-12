@@ -1,0 +1,13 @@
+.card-title {
+    float: left;
+    font-weight: bold;
+    margin: 0;
+}
+
+.card-header>.card-tools {
+    float: right;
+}
+
+.card-header>.card-form {
+    float: left;
+}
