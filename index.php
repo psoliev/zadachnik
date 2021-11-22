@@ -5,21 +5,24 @@ include_once 'db_connect.php';
 
 $page = 1;
 if(!empty($_GET['page'])) {
-    $page = filter_input(INPUT_GET, 'page', FILTER_VALIDATE_INT);
+    $page = filter_input(INPUT_GET, 'page', FILTER_VALIDATE_INT);//фильтруем переменная @page
     if(false === $page) {
         $page = 1;
     }
 }
-$items_per_page = 5;
+$items_per_page = 5; //Количество записи в страниц
 $offset = ($page - 1) * $items_per_page;
 
+/*
+ * Для удаления задачи с таблица база данных по ID запись
+ * */
 if($_POST['delete_task'] and $_POST['delete_task'] > 0){
     $conn->query('DELETE FROM tasks WHERE id="'.$_POST['delete_task'].'"');
 }
 
-$condition = '';
+$condition = ''; //Это переменная нужен для отбор записей по условиям
 if($_POST['author']>0){
-    $_SESSION['selected_author'] = $_POST['author'];
+    $_SESSION['selected_author'] = $_POST['author'];//Чтобы при переходе на другую страницу не потерят параметри отбора, использовал сессия
 }elseif(isset($_POST['author']) and $_POST['author']==0){
     $_SESSION['selected_author'] = 0;
 }
@@ -72,9 +75,10 @@ if($_SESSION['selected_status']>0){
                                 <div class="card-form">
                                     <select name="author" id="author">
                                         <?php
+                                        /*Выборка из база данных, списко авторов и их количестов задач*/
                                         $tasks_authors = $conn->query("SELECT a.id,a.name,COUNT(*) AS kol FROM `authors` a INNER JOIN `tasks` t ON a.id=t.author_id GROUP BY a.id WITH ROLLUP");
                                         while($author = $tasks_authors->fetch_array()){
-                                            if(is_null($author['id'])){
+                                            if(is_null($author['id'])){//из за того что я использовал ROLL UP строка с пустыми ID это сумма количество задач
                                                 echo '<option value="0" ';
                                                 if($_SESSION['selected_author']==0){
                                                     echo 'selected';
